@@ -1,0 +1,25 @@
+http:
+  routers:
+    nas:
+      entrypoints:
+       - web
+      rule: Host(`nas.ditschers.de`, `nas.home.ditschers.de`, `nas.ditscher.me`, `nas.home.ditscher.me`)
+      service: dsm
+      middlewares:
+        - https-redirect
+    nas-secure:
+      entrypoints:
+            websecure
+      rule: Host(`nas.ditschers.de`, `nas.home.ditschers.de`, `nas.ditscher.me`, `nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: dsm
+      middlewares:
+        - secHeaders
+  services:
+    dsm:
+      loadBalancer:
+        servers:
+          - 192.168.1.222:10658
+        serversTransport:
+          - skip-verify

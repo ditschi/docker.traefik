@@ -1,0 +1,36 @@
+version: "3.3"
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - "traefik"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./data/acme.json:/acme.json
+      - ./configs/:/configs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.traefik.middlewares=https-redirect@file"
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "traefik.http.routers.traefik-secure.middlewares=secHeaders@file,traefik-auth"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=traefik:$$apr1$$NBfJwzzc$$ygxh2HpQm8.RE.l6T7kX5."
+#      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAFIC_BASIC_AUTH}"
+
+networks:
+  traefik:
+    external: true

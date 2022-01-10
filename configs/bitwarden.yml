@@ -1,0 +1,37 @@
+http:
+  routers:
+    bitwarden:
+      entrypoints:
+       - web
+      rule: |
+        Host(
+          `bitwarden.ditschers.de`, `bitwarden.home.ditschers.de`, `bitwarden.ditscher.me`, `bitwarden.home.ditscher.me`,
+          `vault.ditschers.de`, `vault.home.ditschers.de`, `vault.ditscher.me`, `vault.home.ditscher.me`) ||
+        Host(
+          `syncthing.nas.ditschers.de`, `syncthing.nas.home.ditschers.de`, `syncthing.nas.ditscher.me`, `syncthing.nas.home.ditscher.me`,
+          `sync.nas.ditschers.de`, `sync.nas.home.ditschers.de`, `sync.nas.ditscher.me`, `sync.nas.home.ditscher.me`,)
+      service: nas
+      middlewares:
+        - https-redirect
+    bitwarden-secure:
+      entrypoints:
+            websecure
+      rule: |
+        Host(
+          `bitwarden.ditschers.de`, `bitwarden.home.ditschers.de`, `bitwarden.ditscher.me`, `bitwarden.home.ditscher.me`,
+          `vault.ditschers.de`, `vault.home.ditschers.de`, `vault.ditscher.me`, `vault.home.ditscher.me`) ||
+        Host(
+          `syncthing.nas.ditschers.de`, `syncthing.nas.home.ditschers.de`, `syncthing.nas.ditscher.me`, `syncthing.nas.home.ditscher.me`,
+          `sync.nas.ditschers.de`, `sync.nas.home.ditschers.de`, `sync.nas.ditscher.me`, `sync.nas.home.ditscher.me`,)
+      tls:
+        certresolver: letsencrypt
+      service: nas
+      middlewares:
+        - secHeaders
+  services:
+    nas:
+      loadBalancer:
+        servers:
+          - 192.168.1.222
+        serversTransport:
+          - skip-verify
