@@ -11,13 +11,19 @@ entryPoints:
     address: ":443"
   traefik:
     address: ":8080"
+  # dnsovertls:
+  #   address: ":853"
+  # dns:
+  #   address: ":53"
+  # udpdns:
+  #   address: ":53/udp"
 providers:
   docker:
-    endpoint: "unix:///var/run/docker.sock"
+    endpoint: unix:///var/run/docker.sock
     exposedByDefault: false
     network: traefik
   file:
-    directory: "/configs"
+    directory: /configs
 
 certificatesResolvers:
   letsencrypt:
@@ -26,4 +32,3 @@ certificatesResolvers:
       storage: acme.json
       httpChallenge:
         entryPoint: web
-
