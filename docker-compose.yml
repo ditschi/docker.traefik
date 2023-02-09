@@ -19,6 +19,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./data/acme:/acme/
+      - ./data/logs:/logs/
       - ./configs/:/configs/
     labels:
       - traefik.enable=true
