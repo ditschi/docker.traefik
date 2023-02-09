@@ -8,10 +8,12 @@ services:
       - no-new-privileges:true
     networks:
       - traefik
+      - proxy
     ports:
       - 80:80
       - 443:443
       - 8080:8080
+      - 8083:8083
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -21,11 +23,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik
-      # - traefik.http.routers.traefik.entrypoints=web
-      # - traefik.http.routers.traefik.rule=Host(`traefik.vps.ditschers.de`, `traefik.vps.ditscher.me`, `traefik.vps.ditscher.rocks`)
-      # - traefik.http.routers.traefik.middlewares=https-redirect@file
       - traefik.http.routers.traefik-secure.entrypoints=websecure
-      - traefik.http.routers.traefik-secure.rule=Host(`traefik.vps.ditschers.de`, `traefik.vps.ditscher.me`, `traefik.vps.ditscher.rocks`)
+      - traefik.http.routers.traefik-secure.rule=Host(`traefik.my-host.ditschers.de`, `traefik.my-host.ditscher.me`, `traefik.my-host.ditscher.rocks`)
       - traefik.http.routers.traefik-secure.tls=true
       - traefik.http.routers.traefik-secure.tls.certresolver=letsencrypt
       - traefik.http.routers.traefik-secure.service=api@internal
@@ -35,4 +34,6 @@ services:
 
 networks:
   traefik:
+    external: true
+  proxy:
     external: true
