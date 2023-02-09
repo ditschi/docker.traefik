@@ -33,7 +33,7 @@ certificatesResolvers:
   letsencrypt:
     acme:
       email: webmaster@ditschers.de
-      storage: acme.json
+      storage: /acme/acme.json
       httpChallenge:
         entryPoint: web
 
