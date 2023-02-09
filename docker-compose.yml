@@ -24,7 +24,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik
       - traefik.http.routers.traefik-secure.entrypoints=websecure
-      - traefik.http.routers.traefik-secure.rule=Host(`traefik.${HOSTNAME}.ditschers.de`, `traefik.${HOSTNAME}.ditscher.me`, `traefik.${HOSTNAME}.ditscher.rocks`)
+      - traefik.http.routers.traefik-secure.rule=Host(`traefik.${TRAEFIK_HOST}.ditschers.de`, `traefik.${TRAEFIK_HOST}.ditscher.me`, `traefik.${TRAEFIK_HOST}.ditscher.rocks`)
       - traefik.http.routers.traefik-secure.tls=true
       - traefik.http.routers.traefik-secure.tls.certresolver=letsencrypt
       - traefik.http.routers.traefik-secure.service=api@internal
