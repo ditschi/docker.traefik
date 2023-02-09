@@ -3,12 +3,16 @@ api:
 entryPoints:
   web:
     address: ":80"
-    # http:
-    #   redirections:
-    #       entryPoint:
-    #         to: websecure
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
   websecure:
     address: ":443"
+    http:
+      middlewares:
+        - secHeaders@file
   traefik:
     address: ":8080"
   # dnsovertls:
@@ -32,3 +36,9 @@ certificatesResolvers:
       storage: acme.json
       httpChallenge:
         entryPoint: web
+
+log:
+  filePath: /logs/traefik.log
+  level: INFO
+accessLog:
+  filePath: "/logs/access.log"
