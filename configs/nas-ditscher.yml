@@ -1,25 +1,33 @@
 http:
   routers:
-    nas:
-      entrypoints:
-       - web
-      rule: Host(`nas.ditschers.de`, `nas.home.ditschers.de`, `nas.ditscher.me`, `nas.home.ditscher.me`)
-      service: dsm
-      middlewares:
-        - https-redirect
     nas-secure:
       entrypoints:
-            websecure
+        - websecure
       rule: Host(`nas.ditschers.de`, `nas.home.ditschers.de`, `nas.ditscher.me`, `nas.home.ditscher.me`)
       tls:
         certresolver: letsencrypt
       service: dsm
       middlewares:
-        - secHeaders
+        - secure-headers@file
+    syncthing-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`syncthing.nas.ditschers.de`, `syncthing.nas.home.ditschers.de`, `syncthing.nas.ditscher.me`, `syncthing.nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: syncthing
+      middlewares:
+        - secure-headers@file
+
+
   services:
     dsm:
       loadBalancer:
         servers:
-          - 192.168.1.222:10658
-        serversTransport:
-          - skip-verify
+          - url: "https://192.168.1.222:10658"
+        passHostHeader: false
+    syncthing:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.222:8384"
+        passHostHeader: true

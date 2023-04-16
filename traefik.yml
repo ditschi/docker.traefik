@@ -10,6 +10,7 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
+<<<<<<< HEAD
     http:
       middlewares:
         - secHeaders@file
@@ -21,6 +22,16 @@ entryPoints:
   #   address: ":53"
   # udpdns:
   #   address: ":53/udp"
+=======
+  traefik:
+    address: ":8080"
+  dnsovertls:
+    address: ":853"
+  dns:
+    address: ":53"
+  udpdns:
+    address: ":53/udp"
+>>>>>>> db749d1 (now working on homeserver with dns-over-tls)
 providers:
   docker:
     endpoint: unix:///var/run/docker.sock
@@ -42,3 +53,16 @@ log:
   level: INFO
 accessLog:
   filePath: "/logs/access.log"
+
+serversTransport:
+  insecureSkipVerify: true
+
+
+# metrics:
+#   influxDB2:
+#     address: https://influx.home.ditscher.me
+#     token: "ZF1jWOO9r5pGG_IbESYaMmI16QNmtLZ-VG42qd05a-OX6NUVaDMFUgFNtnrGzGfrqQliDNU3g_qMVYYzj-6vHw=="
+#     org: ditscher
+#     bucket: testing
+#     additionalLabels:
+#       host: traefik.home.ditscher.me
