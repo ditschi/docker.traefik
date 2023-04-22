@@ -10,19 +10,6 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
-<<<<<<< HEAD
-    http:
-      middlewares:
-        - secHeaders@file
-  traefik:
-    address: ":8080"
-  # dnsovertls:
-  #   address: ":853"
-  # dns:
-  #   address: ":53"
-  # udpdns:
-  #   address: ":53/udp"
-=======
   traefik:
     address: ":8080"
   dnsovertls:
@@ -31,7 +18,11 @@ entryPoints:
     address: ":53"
   udpdns:
     address: ":53/udp"
->>>>>>> db749d1 (now working on homeserver with dns-over-tls)
+  mqtt:
+    address: ":1883"
+  websocket:
+    address: ":9001"
+
 providers:
   docker:
     endpoint: unix:///var/run/docker.sock
@@ -44,7 +35,7 @@ certificatesResolvers:
   letsencrypt:
     acme:
       email: webmaster@ditschers.de
-      storage: acme.json
+      storage: acme/acme.json
       httpChallenge:
         entryPoint: web
 
