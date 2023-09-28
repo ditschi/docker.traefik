@@ -10,18 +10,17 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
-  traefik:
+  api:
     address: ":8080"
+  mqtt-tls:
+    address: ":8883"
   dnsovertls:
     address: ":853"
   dns:
-    address: ":53"
+    address: ":53/tcp"
   udpdns:
     address: ":53/udp"
-  mqtt:
-    address: ":1883"
-  websocket:
-    address: ":9001"
+
 
 providers:
   docker:

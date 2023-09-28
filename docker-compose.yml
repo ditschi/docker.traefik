@@ -8,9 +8,15 @@ services:
     networks:
       - traefik
     ports:
-      - 80:80
-      - 443:443
-      - 8180:8080
+      - 80:80  # http (redirected to https)
+      - 443:443  # https
+      # - 8080:8080  # traefik api
+      - 53:53/tcp  # dns
+      - 53:53/udp  # udpdns
+      - 853:853    # dns over tls
+      - 8883:8883  # mqtt-tls
+      # - 1883:1883  # mqtt
+      # - 9001:9001  # websocket
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -21,15 +27,15 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik
-      - traefik.http.routers.traefik-secure.entrypoints=websecure
-      - traefik.http.routers.traefik-secure.rule=Host(`${TRAEFIK_SUBDOMAIN}.ditschers.de`, `${TRAEFIK_SUBDOMAIN}.ditscher.me`)
-      - traefik.http.routers.traefik-secure.tls=true
-      - traefik.http.routers.traefik-secure.tls.certresolver=letsencrypt
-      - traefik.http.routers.traefik-secure.service=api@internal
-      - traefik.http.routers.traefik-secure.middlewares=secure-headers@file
-      - traefik.http.routers.traefik-secure.middlewares=traefik-auth
-      - traefik.http.middlewares.traefik-auth.basicauth.users=traefik:$$apr1$$NBfJwzzc$$ygxh2HpQm8.RE.l6T7kX5.
-#      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAFIC_BASIC_AUTH}
+      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.entrypoints=websecure
+      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.rule=Host(`${TRAEFIK_SUBDOMAIN}.ditschers.de`, `${TRAEFIK_SUBDOMAIN}.ditscher.me`)
+      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.tls=true
+      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.service=api@internal
+      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.middlewares=secure-headers@file
+      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.middlewares=${TRAEFIK_SERVICE}-auth
+      #- traefik.http.middlewares.${TRAEFIK_SERVICE}-auth.basicauth.users=traefik:$$apr1$$NBfJwzzc$$ygxh2HpQm8.RE.l6T7kX5.
+      - traefik.http.middlewares.${TRAEFIK_SERVICE}-auth.basicauth.users=${TRAFIC_BASIC_AUTH}
 
 
 networks:
