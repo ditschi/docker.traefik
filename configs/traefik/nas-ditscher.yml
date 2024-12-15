@@ -1,0 +1,107 @@
+http:
+  routers:
+    nas-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`nas.ditschers.de`) || Host(`nas.home.ditschers.de`) || Host(`nas.ditscher.me`) || Host(`nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: nas-dsm
+      middlewares:
+        - secure-headers@file
+    nas-syncthing-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`syncthing.nas.ditschers.de`) || Host(`syncthing.nas.home.ditschers.de`) || Host(`syncthing.nas.ditscher.me`) || Host(`syncthing.nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: nas-syncthing
+      middlewares:
+        - secure-headers@file
+    nas-portainer-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`portainer.nas.ditschers.de`) || Host(`portainer.nas.home.ditschers.de`) || Host(`portainer.nas.ditscher.me`) || Host(`portainer.nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: nas-portainer
+      middlewares:
+        - secure-headers@file
+    nas-paperless-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`paperless.nas.ditschers.de`) || Host(`paperless.nas.home.ditschers.de`) || Host(`paperless.nas.ditscher.me`) || Host(`paperless.nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: nas-paperless
+      middlewares:
+        - secure-headers@file
+    nas-quacamole-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`guacamole.nas.ditschers.de`) || Host(`guacamole.nas.home.ditschers.de`) || Host(`guacamole.nas.ditscher.me`) || Host(`guacamole.nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: nas-guacamole
+      middlewares:
+        - secure-headers@file
+    nas-webdav-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`webdav.nas.ditschers.de`) || Host(`webdav.nas.home.ditschers.de`) || Host(`webdav.nas.ditscher.me`) || Host(`webdav.nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: nas-webdav
+      middlewares:
+        - secure-headers@file
+    nas-jellyfin-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`jellyfin.nas.ditschers.de`) || Host(`jellyfin.nas.home.ditschers.de`) || Host(`jellyfin.nas.ditscher.me`) || Host(`jellyfin.nas.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: nas-jellyfin
+      middlewares:
+        - secure-headers@file
+
+  services:
+    nas-dsm:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.222:10658"
+        passHostHeader: false
+    nas-syncthing:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.222:8384"
+        passHostHeader: true
+    nas-webdav:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.222:5006"
+        passHostHeader: true
+    nas-portainer:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.222:9000"
+        passHostHeader: true
+    nas-paperless:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.222:8777"
+        passHostHeader: true
+    nas-jdownloader:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.222:5800"
+        passHostHeader: true
+    nas-guacamole:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.222:8880"
+        passHostHeader: true
+    nas-jellyfin:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.222:8096"
+        passHostHeader: true

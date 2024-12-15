@@ -1,0 +1,60 @@
+http:
+  routers:
+    octoprint-secure:
+      entrypoints:
+        - websecure
+      rule: Host(`octoprint.home.ditschers.de`) || Host(`octoprint.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: octoprint
+      middlewares:
+        - secure-headers@file    
+    octoprint-portainer:
+      entrypoints:
+        - websecure
+      rule: Host(`portainer.octoprint.home.ditschers.de`) || Host(`portainer.octoprint.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: octoprint-portainer
+      middlewares:
+        - secure-headers@file
+    octoprint-spoolman:
+      entrypoints:
+        - websecure
+      rule: Host(`spoolman.octoprint.home.ditschers.de`) || Host(`spoolman.octoprint.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: octoprint-spoolman
+      middlewares:
+        - secure-headers@file
+        - spoolman-auth
+  middlewares:
+    spoolman-auth:
+      basicauth: 
+        # To create a user:password pair, the following command can be used:
+        # echo $(htpasswd -nb user password) | sed -e s/\\$/\\$\\$/g
+        users: spoolman:$apr1$BBQbzFe7$fqovjklKbgb331Ahn0vm8.
+
+  services:
+    octoprint:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.194:80
+            weight: 9999
+          - url: http://192.168.1.238:80
+            weight: 1
+          
+    octoprint-portainer:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.194:9443
+            weight: 9999
+          - url: http://192.168.1.238:9443
+            weight: 1
+    octoprint-spoolman:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.194:7912
+            weight: 9999
+          - url: http://192.168.1.238:7912
+            weight: 1

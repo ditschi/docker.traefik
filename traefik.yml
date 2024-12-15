@@ -10,17 +10,19 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
-    http:
-      middlewares:
-        - secHeaders@file
-  traefik:
+  api:
     address: ":8080"
-  # dnsovertls:
-  #   address: ":853"
-  # dns:
-  #   address: ":53"
-  # udpdns:
-  #   address: ":53/udp"
+  mqtt-tls:
+    address: ":8883"
+  dnsovertls:
+    address: ":853"
+  dns:
+    address: ":53/tcp"
+  udpdns:
+    address: ":53/udp"
+  ping:
+   address: ":8082"
+
 providers:
   docker:
     endpoint: unix:///var/run/docker.sock
@@ -33,12 +35,28 @@ certificatesResolvers:
   letsencrypt:
     acme:
       email: webmaster@ditschers.de
-      storage: /acme/acme.json
+      storage: acme/acme.json
       httpChallenge:
         entryPoint: web
 
 log:
   filePath: /logs/traefik.log
   level: INFO
+  maxAge: 7
 accessLog:
-  filePath: "/logs/access.log"
+  filePath: /logs/access.log
+
+serversTransport:
+  insecureSkipVerify: true
+
+ping:
+  entryPoint: ping
+
+# metrics:
+#   influxDB2:
+#     address: https://influx.home.ditscher.me
+#     token: $INFLUX_TOKEN
+#     org: ditscher
+#     bucket: testing
+#     additionalLabels:
+#       host: traefik.home.ditscher.me

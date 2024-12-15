@@ -1,0 +1,33 @@
+# http:
+#   routers:
+#     backup-nas-secure:
+#       entrypoints:
+#         - websecure
+#       rule: HostRegexp(`^backup-nas\..+$`) || Host(`backup-nas.ditschers.de`) || Host(`backup-nas.home.ditschers.de`) || Host(`backup-nas.ditscher.me`) || Host(`backup-nas.home.ditscher.me`)
+#       tls:
+#         certresolver: letsencrypt
+#       service: backup-nas-dsm
+#       middlewares:
+#         - secure-headers@file
+#     backup-nas-syncthing-secure:
+#       entrypoints:
+#         - websecure
+#       rule: HostRegexp(`^syncthing\.backup-nas\..+$`) || Host(`syncthing.backup-nas.ditschers.de`) || Host(`syncthing.backup-nas.home.ditschers.de`) || Host(`syncthing.backup-nas.ditscher.me`) || Host(`syncthing.backup-nas.home.ditscher.me`)
+#       tls:
+#         certresolver: letsencrypt
+#       service: backup-nas-syncthing
+#       middlewares:
+#         - secure-headers@file
+
+
+#   services:
+#     backup-nas-dsm:
+#       loadBalancer:
+#         servers:
+#           - url: "https://192.168.1.223:5001"
+#         passHostHeader: false
+#     backup-nas-syncthing:
+#       loadBalancer:
+#         servers:
+#           - url: "https://192.168.1.223:8384"
+#         passHostHeader: true

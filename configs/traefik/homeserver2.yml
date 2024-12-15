@@ -1,0 +1,30 @@
+http:
+  routers:
+    home2-grafana:
+      entrypoints:
+        - websecure
+      rule: Host(`grafana.new.home.ditschers.de`) || Host(`grafana.new.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-grafana
+      middlewares:
+        - secure-headers@file    
+    home2-paperless:
+      entrypoints:
+        - websecure
+      rule: Host(`paperless.new.home.ditschers.de`) || Host(`paperless.new.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-paperless
+      middlewares:
+        - secure-headers@file
+
+  services:
+    home2-grafana:
+      loadBalancer:
+        servers:
+          - url: https://192.168.1.202:9443
+    home2-paperless:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.202:8000
