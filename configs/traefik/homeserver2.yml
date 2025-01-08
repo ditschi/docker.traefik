@@ -8,14 +8,38 @@ http:
         certresolver: letsencrypt
       service: home2-grafana
       middlewares:
-        - secure-headers@file    
+        - secure-headers@file
     home2-paperless:
       entrypoints:
         - websecure
-      rule: Host(`paperless.new.home.ditschers.de`) || Host(`paperless.new.home.ditscher.me`)
+      rule: >
+        Host(`paperless.home.ditschers.de`)
+        || Host(`paperless.home.ditscher.me`)
       tls:
         certresolver: letsencrypt
       service: home2-paperless
+      middlewares:
+        - secure-headers@file
+    # home2-paperless-ftp:
+    #   entrypoints:
+    #     - websecure
+    #   rule: >
+    #     Host(`ftp.paperless.home.ditschers.de`)
+    #     || Host(`ftp.paperless.home.ditscher.me`)
+    #   tls:
+    #     certresolver: letsencrypt
+    #   service: home2-paperless-ftp
+    #   middlewares:
+    #     - secure-headers@file
+    home2-duplicati:
+      entrypoints:
+        - websecure
+      rule: >
+        Host(`backup.new.home.ditschers.de`)
+        || Host(`backup.new.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-duplicati
       middlewares:
         - secure-headers@file
 
@@ -27,4 +51,20 @@ http:
     home2-paperless:
       loadBalancer:
         servers:
-          - url: http://192.168.1.202:8000
+          - url: http://192.168.1.202:8010
+        passHostHeader: true
+    # home2-paperless-ftp:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://192.168.1.202:8021
+    #     passHostHeader: true
+    home2-paperless-gpt:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.202:8020
+        passHostHeader: true
+    home2-duplicati:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.202:8200
+        #passHostHeader: true

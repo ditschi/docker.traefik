@@ -105,3 +105,30 @@ http:
         servers:
           - url: "http://192.168.1.222:8096"
         passHostHeader: true
+        
+tcp:
+  routers:
+    nas-webdav-secure:
+      entryPoints:
+        - websecure
+      rule: HostSNI(`dav.nas.ditschers.de`) || HostSNI(`dav.nas.home.ditschers.de`) || HostSNI(`dav.nas.ditscher.me`) || HostSNI(`dav.nas.home.ditscher.me`)
+      tls:
+        certResolver: letsencrypt
+      service: nas-webdav
+    nas-ftp-secure:
+      entryPoints:
+        - websecure
+      rule: HostSNI(`ftp.nas.ditschers.de`) || HostSNI(`ftp.nas.home.ditschers.de`) || HostSNI(`ftp.nas.ditscher.me`) || HostSNI(`ftp.nas.home.ditscher.me`)
+      tls:
+        certResolver: letsencrypt
+      service: nas-ftp
+
+  services:
+    nas-webdav:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.222:5006
+    nas-ftp:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.222:21

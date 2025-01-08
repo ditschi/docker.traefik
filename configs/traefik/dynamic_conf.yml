@@ -48,7 +48,8 @@ http:
     https-redirect:
       redirectscheme:
         scheme: https
-
-#  serversTransport:
-#    allow-insecure:
-#      insecureSkipVerify: true
+    websocket-headers:
+      headers:
+        customRequestHeaders:
+          Upgrade: "websocket"
+          Connection: "Upgrade"
