@@ -1,0 +1,45 @@
+# http:
+#   routers:
+#     home2-forwarding-web:
+#       rule: >
+#         HostRegexp(`{host:.+}`)
+#         || HostRegexp(`{subdomain:[^.]+}.new.home.ditschers.de`)
+#         || HostRegexp(`{subdomain:[^.]+}.new.home.ditscher.me`)
+#       entryPoints:
+#         - web
+#       service: homeserver2-web
+
+#     home2-forwarding-websecure:
+#       rule: >
+#         HostRegexp(`{host:.+}`)
+#         || HostRegexp(`{subdomain:[^.]+}.new.home.ditschers.de`)
+#         || HostRegexp(`{subdomain:[^.]+}.new.home.ditscher.me`)
+#       entryPoints:
+#         - websecure
+#       service: homeserver2-websecure
+
+#     home2-forwarding-ping:
+#       rule: >
+#         HostRegexp(`{host:.+}`)
+#         || HostRegexp(`{subdomain:[^.]+}.new.home.ditschers.de`)
+#         || HostRegexp(`{subdomain:[^.]+}.new.home.ditscher.me`)
+#       entryPoints:
+#         - ping
+#       service: homeserver2-ping
+
+#   services:
+#     homeserver2-web:
+#       loadBalancer:
+#         servers:
+#           - url: "http://192.168.1.202:80"    # Port for web
+
+#     homeserver2-websecure:
+#       loadBalancer:
+#         servers:
+#           - url: "https://192.168.1.202:443"   # Port for websecure
+#         passHostHeader: true
+
+#     homeserver2-ping:
+#       loadBalancer:
+#         servers:
+#           - url: "http://192.168.1.202:8082"  # Port for ping

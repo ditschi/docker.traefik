@@ -20,6 +20,17 @@ http:
       service: home2-paperless
       middlewares:
         - secure-headers@file
+    home2-paperless-gpt:
+      entrypoints:
+        - websecure
+      rule: >
+        Host(`gpt.paperless.home.ditschers.de`)
+        || Host(`gpt.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-paperless-gpt
+      middlewares:
+        - secure-headers@file
     # home2-paperless-ftp:
     #   entrypoints:
     #     - websecure
@@ -37,6 +48,8 @@ http:
       rule: >
         Host(`backup.new.home.ditschers.de`)
         || Host(`backup.new.home.ditscher.me`)
+        || Host(`duplicati.new.home.ditschers.de`)
+        || Host(`duplicati.new.home.ditscher.me`)
       tls:
         certresolver: letsencrypt
       service: home2-duplicati
@@ -61,10 +74,136 @@ http:
     home2-paperless-gpt:
       loadBalancer:
         servers:
-          - url: http://192.168.1.202:8020
+          - url: http://192.168.1.202:8088
         passHostHeader: true
     home2-duplicati:
       loadBalancer:
         servers:
           - url: http://192.168.1.202:8200
         #passHostHeader: true
+
+tcp:
+  routers:
+    home2-ftp-paperless:
+      entrypoints:
+        - ftp
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless
+    home2-ftp-paperless-passive-0:
+      entrypoints:
+        - ftp-passive-0
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-0
+    home2-ftp-paperless-passive-1:
+      entrypoints:
+        - ftp-passive-1
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-1
+    home2-ftp-paperless-passive-2:
+      entrypoints:
+        - ftp-passive-2
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-2
+    home2-ftp-paperless-passive-3:
+      entrypoints:
+        - ftp-passive-3
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-3
+    home2-ftp-paperless-passive-4:
+      entrypoints:
+        - ftp-passive-4
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-4
+    home2-ftp-paperless-passive-5:
+      entrypoints:
+        - ftp-passive-5
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-5
+    home2-ftp-paperless-passive-6:
+      entrypoints:
+        - ftp-passive-6
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-6
+    home2-ftp-paperless-passive-7:
+      entrypoints:
+        - ftp-passive-7
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-7
+    home2-ftp-paperless-passive-8:
+      entrypoints:
+        - ftp-passive-8
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-8
+    home2-ftp-paperless-passive-9:
+      entrypoints:
+        - ftp-passive-9
+      rule: HostSNI(`ftp.paperless.home.ditschers.de`) || HostSNI(`ftp.paperless.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: home2-ftp-paperless-passive-9
+
+  services:
+    home2-ftp-paperless:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:8021
+    home2-ftp-paperless-passive-0:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30000
+    home2-ftp-paperless-passive-1:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30001
+    home2-ftp-paperless-passive-2:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30002
+    home2-ftp-paperless-passive-3:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30003
+    home2-ftp-paperless-passive-4:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30004
+    home2-ftp-paperless-passive-5:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30005
+    home2-ftp-paperless-passive-6:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30006
+    home2-ftp-paperless-passive-7:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30007
+    home2-ftp-paperless-passive-8:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:30008
+    home2-ftp-paperless-passive-9:
+      loadBalancer:
+        servers:
+          - address: 192.168.1.202:3000

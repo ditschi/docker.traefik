@@ -22,6 +22,28 @@ entryPoints:
     address: ":53/udp"
   ping:
    address: ":8082"
+  ftp:
+    address: ":21"
+  ftp-passive-0:
+    address: ":40000"
+  ftp-passive-1:
+    address: ":40001"
+  ftp-passive-2:
+    address: ":40002"
+  ftp-passive-3:
+    address: ":40003"
+  ftp-passive-4:
+    address: ":40004"
+  ftp-passive-5:
+    address: ":40005"
+  ftp-passive-6:
+    address: ":40006"
+  ftp-passive-7:
+    address: ":40007"
+  ftp-passive-8:
+    address: ":40008"
+  ftp-passive-9:
+    address: ":40009"
 
 providers:
   docker:

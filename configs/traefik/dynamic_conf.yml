@@ -48,8 +48,4 @@ http:
     https-redirect:
       redirectscheme:
         scheme: https
-    websocket-headers:
-      headers:
-        customRequestHeaders:
-          Upgrade: "websocket"
-          Connection: "Upgrade"
+

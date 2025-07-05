@@ -14,8 +14,6 @@ services:
       - 53:53/udp  # udpdns
       - 853:853    # dns over tls
       - 8883:8883  # mqtt-tls
-      # - 1883:1883  # mqtt
-      # - 9001:9001  # websocket
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -43,21 +41,29 @@ services:
       - traefik.http.middlewares.${TRAEFIK_SERVICE}-auth.basicauth.users=${TRAFIC_BASIC_AUTH}
 
   logrotate:
-    image: blacklabelops/logrotate
+    image: alpine:latest
     container_name: traefik-logrotate
     restart: unless-stopped
     volumes:
       - ./logs/:/logs/  # Same log folder as Traefik
       - ./configs/logrotate/:/etc/logrotate.d/  # Store logrotate configuration
     entrypoint: >
-      /bin/bash -c '
+      /bin/sh -c '
+        apk add --no-cache logrotate &&
+        if [ ! -f /etc/logrotate.d/traefik-logs.conf ]; then
+          echo "Error: /etc/logrotate.d/traefik-logs.conf not found" >&2
+          exit 1
+        fi &&
         chmod go-w /etc/logrotate.d/traefik-logs.conf &&
         chown root /etc/logrotate.d/traefik-logs.conf &&
-        while true; do logrotate -f /etc/logrotate.d/traefik-logs.conf && sleep 86400; done
+        while true; do
+          echo "Running logrotate..." &&
+          logrotate -v -f /etc/logrotate.d/traefik-logs.conf 2>&1 &&
+          echo "Sleeping for 24 hours..." &&
+          sleep 86400
+        done
       '
 
 networks:
   traefik:
-    external: true
-  proxy:
     external: true
