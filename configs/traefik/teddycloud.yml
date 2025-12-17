@@ -1,0 +1,41 @@
+http:
+  routers:
+    teddycloud:
+      entrypoints:
+        - websecure
+      rule: Host(`teddycloud.home.ditschers.de`) || Host(`teddycloud.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: teddycloud
+      middlewares:
+        - secure-headers@file
+        - teddycloud-auth
+
+    teddycloud-edit:
+      entrypoints:
+        - websecure
+      rule: >
+        Host(`edit.teddycloud.home.ditschers.de`)
+        || Host(`edit.teddycloud.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: teddycloud-edit
+      middlewares:
+        - secure-headers@file
+
+  services:
+    teddycloud:
+      loadBalancer:
+        servers:
+          - url: https://192.168.1.123:8443
+    teddycloud-edit:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.202:8080
+#        passHostHeader: true
+
+  middlewares:
+    teddycloud-auth:
+      basicauth:
+        users:
+          - "teddy:$2y$05$4AaMXHzu0bT7hJtPNO1NX.KhdQ2HeXUBfxMMWkAlCdPdSjTt0rYCK"

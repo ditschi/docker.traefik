@@ -1,0 +1,24 @@
+http:
+  routers:
+    bartlwp:
+      entrypoints:
+        - websecure
+      rule: Host(`bartl-wp.home.ditschers.de`) || Host(`bartl-wp.home.ditscher.me`)
+      tls:
+        certresolver: letsencrypt
+      service: bartlwp
+      middlewares:
+        - secure-headers-no-frame-deny@file
+        - bartlwp-auth
+  middlewares:
+    bartlwp-auth:
+      basicauth:
+        # To create a user:password pair, the following command can be used:
+        # echo $(htpasswd -nb user password) | sed -e s/\\$/\\$\\$/g
+        users: bartl-admin:$2y$05$yM8aPCP9Sgh9IixDeCQ2dut04fBeOyx.CM6nOetkUpBSbB8aJc.JO
+
+  services:
+    bartlwp:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.211:80

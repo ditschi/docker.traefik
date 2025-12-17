@@ -22,7 +22,7 @@ services:
       - ./logs/:/logs/
       - ./configs/traefik/:/configs/
     healthcheck:
-      test: traefik healthcheck  #wget --quiet --tries=1 --spider http://ping.127.0.0.1.nip.io/ping || exit 1
+      test: traefik healthcheck  --ping #wget --quiet --tries=1 --spider http://ping.127.0.0.1.nip.io/ping || exit 1
       interval: 10s
       timeout: 1s
       retries: 3
@@ -58,7 +58,7 @@ services:
         chown root /etc/logrotate.d/traefik-logs.conf &&
         while true; do
           echo "Running logrotate..." &&
-          logrotate -v -f /etc/logrotate.d/traefik-logs.conf 2>&1 &&
+          logrotate -f /etc/logrotate.d/traefik-logs.conf > /dev/null 2>&1 &&
           echo "Sleeping for 24 hours..." &&
           sleep 86400
         done
