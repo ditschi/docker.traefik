@@ -1,0 +1,22 @@
+{
+  "service": {
+    "name": "example-app",
+    "tags": [
+      "traefik.enable=true",
+      "traefik.http.routers.example-app.rule=Host(`example.home.ditschers.de`) || Host(`example.home.ditscher.me`)",
+      "traefik.http.routers.example-app.entrypoints=websecure",
+      "traefik.http.routers.example-app.tls=true",
+      "traefik.http.routers.example-app.tls.certresolver=letsencrypt",
+      "traefik.http.routers.example-app.middlewares=secure-headers@file",
+      "traefik.http.services.example-app.loadbalancer.server.port=8080",
+      "traefik.http.services.example-app.loadbalancer.server.scheme=http"
+    ],
+    "port": 8080,
+    "address": "192.168.1.100",
+    "check": {
+      "http": "http://192.168.1.100:8080/health",
+      "interval": "10s",
+      "timeout": "2s"
+    }
+  }
+}

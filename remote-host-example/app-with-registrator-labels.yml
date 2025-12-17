@@ -1,0 +1,42 @@
+# Example application that will be auto-registered via Registrator
+# Place this on a remote host with consul-agent and registrator running
+
+services:
+  myapp:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      # Registrator uses SERVICE_ env vars
+      SERVICE_NAME: myapp
+      # Tags must be comma-separated, no spaces
+      SERVICE_TAGS: >-
+        traefik.enable=true,
+        traefik.http.routers.myapp.rule=Host(`myapp.home.ditschers.de`) || Host(`myapp.home.ditscher.me`),
+        traefik.http.routers.myapp.entrypoints=websecure,
+        traefik.http.routers.myapp.tls=true,
+        traefik.http.routers.myapp.tls.certresolver=letsencrypt,
+        traefik.http.routers.myapp.middlewares=secure-headers@file,
+        traefik.http.services.myapp.loadbalancer.server.port=80,
+        traefik.http.services.myapp.loadbalancer.server.scheme=http
+      # Optional: Health check endpoint
+      SERVICE_CHECK_HTTP: /health
+      SERVICE_CHECK_INTERVAL: 15s
+      SERVICE_CHECK_TIMEOUT: 3s
+
+  # Another example - a web service on a different port
+  webapp:
+    image: httpd:latest
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      SERVICE_NAME: webapp
+      SERVICE_TAGS: >-
+        traefik.enable=true,
+        traefik.http.routers.webapp.rule=Host(`webapp.home.ditschers.de`),
+        traefik.http.routers.webapp.entrypoints=websecure,
+        traefik.http.routers.webapp.tls=true,
+        traefik.http.routers.webapp.tls.certresolver=letsencrypt,
+        traefik.http.services.webapp.loadbalancer.server.port=80

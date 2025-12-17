@@ -52,6 +52,18 @@ providers:
     network: traefik
   file:
     directory: /configs
+  consulCatalog:
+    endpoint:
+      address: consul:8500
+    exposedByDefault: false
+    prefix: traefik
+    requireConsistent: false
+    stale: false
+    cache: false
+    refreshInterval: 15s
+    connectAware: false
+    connectByDefault: false
+    watch: true
 
 certificatesResolvers:
   letsencrypt:
@@ -64,7 +76,7 @@ certificatesResolvers:
 log:
   filePath: /logs/traefik.log
   level: INFO
-  maxAge: 7
+  # maxAge: 7
 accessLog:
   filePath: /logs/access.log
 

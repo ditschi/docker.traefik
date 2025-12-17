@@ -1,4 +1,43 @@
 services:
+  consul:
+    image: hashicorp/consul:latest
+    restart: unless-stopped
+    command: >
+      agent -server -ui
+        -bootstrap-expect=1
+        -client=0.0.0.0
+        -bind='{{ GetInterfaceIP "eth0" }}'
+        -data-dir=/consul/data
+        -config-dir=/consul/config
+    networks:
+      - traefik
+    ports:
+      - "8500:8500/tcp"        # HTTP API / UI
+      - "8600:8600/tcp"        # DNS TCP
+      - "8600:8600/udp"        # DNS UDP
+      - "8300:8300/tcp"        # Server RPC
+      - "8301:8301/tcp"        # Serf LAN (fallback)
+      - "8301:8301/udp"        # Serf LAN (required)
+      - "8302:8302/tcp"        # Serf WAN (fallback)
+      - "8302:8302/udp"        # Serf WAN (required)
+    volumes:
+      - ./data/consul:/consul/data
+      - ./configs/consul:/consul/config
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+      - traefik.http.routers.consul-secure.entrypoints=websecure
+      - traefik.http.routers.consul-secure.rule=Host(`consul.${TRAEFIK_HOST}.ditschers.de`) || Host(`consul.${TRAEFIK_HOST}.ditscher.me`)
+      - traefik.http.routers.consul-secure.tls=true
+      - traefik.http.routers.consul-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.consul-secure.middlewares=secure-headers@file
+      - traefik.http.routers.consul-secure.middlewares=consul-auth
+      - traefik.http.routers.consul-secure.service=consul
+      - traefik.http.middlewares.consul-auth.basicauth.users=${CONSUL_BASIC_AUTH}
+      - traefik.http.services.consul.loadbalancer.server.port=8500
+
   traefik:
     image: traefik:latest
     restart: unless-stopped
@@ -9,7 +48,7 @@ services:
     ports:
       - 80:80  # http (redirected to https)
       - 443:443  # https
-      # - 8080:8080  # traefik api
+      - 8020:8080  # traefik api
       - 53:53/tcp  # dns
       - 53:53/udp  # udpdns
       - 853:853    # dns over tls
@@ -21,6 +60,8 @@ services:
       - ./data/acme/:/acme/
       - ./logs/:/logs/
       - ./configs/traefik/:/configs/
+    depends_on:
+      - consul
     healthcheck:
       test: traefik healthcheck  --ping #wget --quiet --tries=1 --spider http://ping.127.0.0.1.nip.io/ping || exit 1
       interval: 10s
@@ -30,15 +71,14 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik
-      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.entrypoints=websecure
-      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.rule=Host(`${TRAEFIK_SERVICE}.${TRAEFIK_HOST}.ditschers.de`) || Host(`${TRAEFIK_SERVICE}.${TRAEFIK_HOST}.ditscher.me`)
-      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.tls=true
-      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.tls.certresolver=letsencrypt
-      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.service=api@internal
-      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.middlewares=secure-headers@file
-      - traefik.http.routers.${TRAEFIK_SERVICE}-secure.middlewares=${TRAEFIK_SERVICE}-auth
-      #- traefik.http.middlewares.${TRAEFIK_SERVICE}-auth.basicauth.users=traefik:$$apr1$$NBfJwzzc$$ygxh2HpQm8.RE.l6T7kX5.
-      - traefik.http.middlewares.${TRAEFIK_SERVICE}-auth.basicauth.users=${TRAFIC_BASIC_AUTH}
+      - traefik.http.routers.traefik-secure.entrypoints=websecure
+      - traefik.http.routers.traefik-secure.rule=Host(`traefik.${TRAEFIK_HOST}.ditschers.de`) || Host(`traefik.${TRAEFIK_HOST}.ditscher.me`)
+      - traefik.http.routers.traefik-secure.tls=true
+      - traefik.http.routers.traefik-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.traefik-secure.service=api@internal
+      - traefik.http.routers.traefik-secure.middlewares=secure-headers@file
+      - traefik.http.routers.traefik-secure.middlewares=traefik-auth
+      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAFIC_BASIC_AUTH}
 
   logrotate:
     image: alpine:latest

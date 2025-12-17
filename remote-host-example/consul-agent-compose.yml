@@ -1,0 +1,27 @@
+# Example docker-compose.yml for remote hosts
+# This runs a Consul agent that connects to the main Consul server
+services:
+  consul-agent:
+    image: hashicorp/consul:latest
+    restart: unless-stopped
+    # Replace <MAIN_HOST_IP> with the IP of your Traefik/Consul server
+    command: agent -retry-join=${CONSUL_HOST:-MAIN_HOST_IP} -bind='{{ GetInterfaceIP "${CONSUL_BIND_INTERFACE:-eth0}" }}'
+    network_mode: host
+    volumes:
+      - ./consul-data:/consul/data
+      - ./consul-config:/consul/config
+    environment:
+      - CONSUL_BIND_INTERFACE=${CONSUL_BIND_INTERFACE:-eth0}
+    # Optional: Set a node name for easier identification
+    hostname: consul-agent-thinkCentre-M93
+
+  # Optional: Add Registrator for automatic Docker service registration
+  registrator:
+    image: gliderlabs/registrator:latest
+    restart: unless-stopped
+    command: -internal consul://localhost:8500
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    depends_on:
+      - consul-agent
+    network_mode: host

@@ -1,0 +1,29 @@
+http:
+  routers:
+    fallback-to-homeserver:
+      entryPoints:
+        - web
+        - websecure
+      rule: "HostRegexp(`{host:.+}`) && PathPrefix(`/`)"
+      service: homeserver
+      priority: -1
+  services:
+    homeserver:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.2:80"
+
+tcp:
+  routers:
+    passthrough-to-homeserver:
+      entryPoints:
+        - websecure # :443
+      rule: "HostSNIRegexp(`^(.+\\.)?smarthome\\.home\\.ditscher\\.me$`) || HostSNIRegexp(`^(.+\\.)?smarthome\\.ditschers\\.de$`)"
+      service: homeserver-tls
+      tls:
+        passthrough: true
+  services:
+    homeserver-tls:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.2:443"
